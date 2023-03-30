@@ -19,7 +19,15 @@ export class UserService {
     ) { }
 
     findAll(): Observable<User[]> {
-        return from(this.userRepository.find());
+        return from(this.userRepository.find()).pipe(
+            map((users: User[]) => {
+                return users.map((user: User) => {
+                    const { password, ...result } = user;
+                    return result;
+                });
+            }
+            )
+        );
     }
 
     findOne(id: number): Observable<User> {
@@ -30,7 +38,14 @@ export class UserService {
             
                 }
             }
-        ));
+        )).pipe(
+            map((user: User) => {
+                const { password, ...result } = user;
+                return result;
+            }
+            )
+        );
+
         
     }
 
@@ -65,11 +80,29 @@ export class UserService {
     }   
 
     delete (id: number): Observable<any> {
-        return from(this.userRepository.delete(id));
+        return from(this.userRepository.delete(id)).pipe(  
+            .map((user: User) => {
+                const { password, ...result } = user;
+                return result;
+            }
+            )
+            ,
+            catchError(err => throwError(err) )
+        );
+
     }
 
     update(id: number, user: User): Observable<any> {
-        return from(this.userRepository.update(id, user));
+        return from(this.userRepository.update(id, user)).pipe(
+            .map((user: User) => {
+                const { password, ...result } = user;
+                return result;
+            }
+            )
+            ,
+            catchError(err => throwError(err) )
+        );
+
     }
 
 
