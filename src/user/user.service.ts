@@ -22,12 +22,12 @@ export class UserService {
         return from(this.userRepository.find()).pipe(
             map((users: User[]) => {
                 users.map(user => {
-                    const { password, ...result } = user;
-                    return result;
+                    delete user.password;
+                    return user;
                 });
+               
                 return users;
-            }
-            )
+            })
         );
     }
 
