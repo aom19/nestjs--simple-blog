@@ -13,11 +13,12 @@ import { UserModule } from 'src/user/user.module';
         forwardRef(() => UserModule),
         JwtModule.registerAsync({
             imports: [ConfigModule],
+            inject: [ConfigService],
             useFactory: async (configService: ConfigService) => ({
                 secret: configService.get('JWT_SECRET'),
-                signOptions: { expiresIn: '60s' },
+                signOptions: { expiresIn: '600s' },
             }),
-            inject: [ConfigService],
+            
             
 
 

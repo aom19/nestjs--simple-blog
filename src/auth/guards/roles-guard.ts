@@ -1,34 +1,46 @@
-import { CanActivate, ExecutionContext, Inject, Injectable, forwardRef } from "@nestjs/common";
+
+
+
+import { Injectable, CanActivate, ExecutionContext, Inject, forwardRef } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-
-import { UserService } from "src/user/user.service";
-
-
-
-
+import { UserService } from "../../user/user.service"
+import { Observable } from "rxjs";
+import { User } from "src/user/interface/user.interface";
+import { map } from "rxjs/operators";
+import { hasRoles } from "src/auth/decorator/role.decorator";
 
 
 @Injectable()
 export class RolesGuard implements CanActivate {
     constructor(
-        @Inject(forwardRef (() => UserService))
-        private userService: UserService,
+        private reflector: Reflector,
 
-        private reflector: Reflector
-        
-        ) { }
+        @Inject(forwardRef(() => UserService))
+        private userService: UserService
+    ) { }
 
-    canActivate(context: ExecutionContext): boolean {
+    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const roles = this.reflector.get<string[]>('roles', context.getHandler());
-
         if (!roles) {
             return true;
         }
-        const request = context.switchToHttp().getRequest();
-        console.log(request.user)
-        const user = request.user;
-        const hasRole = () => user.roles.some((role) => roles.includes(role));
-        return user && user.roles && hasRole();
-    }
+        console.log(roles)
 
+        const request = context.switchToHttp().getRequest();
+        const user: User = request.user;
+        console.log(context.switchToHttp().getRequest())
+       
+
+        return this.userService.findOne(user?.id).pipe(
+            map((user: User) => {
+                const hasRole = () => roles.indexOf(user.role) > -1;
+                let hasPermission: boolean = false;
+
+                if (hasRole()) {
+                    hasPermission = true;
+                };
+                return user && hasPermission;
+            })
+        )
+    }
 }
