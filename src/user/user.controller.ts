@@ -14,7 +14,7 @@ export class UserController {
 
     constructor(private userService: UserService) { }
     
-    @hasRoles('Admin')
+   
     @UseGuards(JwtAuthGuard)
     @Get()
     findAll() {
@@ -22,12 +22,14 @@ export class UserController {
     }
 
 
-    @hasRoles('Admin')
-    @UseGuards(PermissionGuard('Admin'))
+    // @hasRoles('Admin')
+    @UseGuards(PermissionGuard('admin'))
     @Get(':id')
     findOne(@Param('id') id: number) {
         return this.userService.findOne(id);
     }
+
+
     @hasRoles('Admin')
     @Post()
     create(@Body() user: User) {

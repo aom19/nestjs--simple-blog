@@ -13,18 +13,19 @@ export const PermissionGuard = (permission: string): Type<CanActivate> => {
     }
     async canActivate(context: ExecutionContext) {
       await super.canActivate(context);
-      const roles = this.reflector?.get<string[]>('roles', context.getHandler());
+      // const roles = this.reflector?.get<string[]>('roles', context.getHandler());
       const request = context.switchToHttp().getRequest<any>();
       //   console.log(request);
-      const user = request.user;
+      const {user} = request.user;
     
      
-      if (!user || !roles) {
+      if (!user ) {
         return false;
       }
-
-      
-      return roles.includes(permission);
+console.log(user.role)
+console.log(permission)
+    
+      return user.role === permission;
    
     }
   }

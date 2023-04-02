@@ -1,3 +1,5 @@
+import { UserRole } from "./user.entity";
+
 export interface User{
   
     id: number;
@@ -9,9 +11,3 @@ export interface User{
       
 }
 
-export enum UserRole {
-    ADMIN = 'admin',
-    CHIEFEDITOR = 'chiefeditor',    
-    EDITOR = 'editor',
-    USER = 'user'
-}
