@@ -6,6 +6,7 @@ import { Observable, catchError, map, of } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/role.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles-guard';
+import { PermissionGuard } from 'src/auth/guards/permission.guard';
 
 
 @Controller('user')
@@ -14,17 +15,20 @@ export class UserController {
     constructor(private userService: UserService) { }
     
     @hasRoles('Admin')
-    @UseGuards(RolesGuard,JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Get()
     findAll() {
         return this.userService.findAll();
     }
-    @UseGuards(JwtAuthGuard)
+
+
+    @hasRoles('Admin')
+    @UseGuards(PermissionGuard('Admin'))
     @Get(':id')
     findOne(@Param('id') id: number) {
         return this.userService.findOne(id);
     }
-
+    @hasRoles('Admin')
     @Post()
     create(@Body() user: User) {
         return this.userService.create(user).pipe(

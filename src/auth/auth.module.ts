@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Inject, Module, forwardRef } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
@@ -6,6 +6,7 @@ import { RolesGuard } from './guards/roles-guard';
 import { JwtStrategy } from './guards/jwt-strategy';
 import { JwtAuthGuard } from './guards/jwt-guard';
 import { UserModule } from 'src/user/user.module';
+import { PassportModule } from '@nestjs/passport';
 
 
 @Module({
@@ -19,10 +20,12 @@ import { UserModule } from 'src/user/user.module';
                 signOptions: { expiresIn: '600s' },
             }),
             
-            
+          
 
 
-        })
+        }),
+        PassportModule,
+      
 
     ],
     providers: [AuthService,RolesGuard,JwtStrategy,JwtAuthGuard],
