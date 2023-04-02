@@ -59,6 +59,7 @@ export class UserService {
                 newUser.username = user.username;
                 newUser.email = user.email;
                 newUser.password = passwordHash;
+                newUser.role = user.role;
                 
                 return from(this.userRepository.save(newUser)).pipe(
                     map((user: User) => {
@@ -88,7 +89,7 @@ export class UserService {
 
     update(id: number, user: User): Observable<any> {
        delete user.password;
-       delete user.password;
+       
 
         return from(this.userRepository.update(id, user));
 

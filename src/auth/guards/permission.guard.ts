@@ -22,8 +22,7 @@ export const PermissionGuard = (permission: string): Type<CanActivate> => {
       if (!user ) {
         return false;
       }
-console.log(user.role)
-console.log(permission)
+
     
       return user.role === permission;
    

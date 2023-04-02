@@ -14,7 +14,7 @@ export class UserController {
 
     constructor(private userService: UserService) { }
     
-   
+    @UseGuards(PermissionGuard('user'))
     @UseGuards(JwtAuthGuard)
     @Get()
     findAll() {
