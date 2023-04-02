@@ -19,8 +19,8 @@ export const PermissionGuard = (permission: string): Type<CanActivate> => {
       const {user} = request.user;
     
      
-      if (!user ) {
-        return false;
+         if (!user ) {
+            return false;
       }
 
     

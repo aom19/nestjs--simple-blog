@@ -1,12 +1,12 @@
 import { Injectable, ParseIntPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Observable,from,switchMap, catchError, map, throwError } from 'rxjs';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { UserEntity } from './interface/user.entity';
 import { User } from './interface/user.interface';
 import { AuthService } from 'src/auth/auth.service';
 import { HttpException } from '@nestjs/common/exceptions/http.exception';
-
+import {paginate, Pagination, IPaginationOptions} from 'nestjs-typeorm-paginate';
 
 
 @Injectable()
@@ -134,6 +134,16 @@ export class UserService {
 
     }
 
+    paginate(options: IPaginationOptions): Observable<Pagination<User>> {
+        return from(paginate<User>(this.userRepository, options)).pipe(
+            map((usersPageable: Pagination<User>) => {
+                usersPageable.items.forEach(function (v) {delete v.password});
+                return usersPageable;
+            })
+        )
+    }
+
+   
 
 
 
