@@ -1,4 +1,4 @@
-import { Controller,Post,Delete,Get,Put, Param,Body, UseGuards, Query, UseInterceptors } from '@nestjs/common';
+import { Controller,Post,Delete,Get,Put, Param,Body, UseGuards, Query, UseInterceptors, UploadedFile,Request } from '@nestjs/common';
 import { UserService } from './user.service';
 
 import { User } from './interface/user.interface';
@@ -9,10 +9,12 @@ import { RolesGuard } from 'src/auth/guards/roles-guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { FileInterceptor } from '@nestjs/platform-express';
-const path = require('path');
+
 import { diskStorage } from 'multer';
 
 
+
+const path = require('path');
 
 export const storage = {
     storage: diskStorage({
@@ -106,12 +108,17 @@ export class UserController {
 
     }
 
+    
+
+    @UseGuards(JwtAuthGuard)
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
-    uploadFile(@Body() file: any):Observable<object> {
-        return of({message: 'File uploaded successfully'});
-
-        
+    uploadFile(@UploadedFile() file , @Request() req):Observable<object> {
+        const user :User = req.user.user;
+        console.log(user)
+        return  of({
+            filename: file.filename,
+        })
     }
 
 
