@@ -24,6 +24,9 @@ export class UserEntity {
   @Column()
   email: string;
 
+  @Column({ nullable: true})
+  profileImage: string;
+
   @Column(  { type: 'enum', enum: UserRole, default: UserRole.User })
   role: UserRole;
 

@@ -115,11 +115,19 @@ export class UserController {
     @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@UploadedFile() file , @Request() req):Observable<object> {
         const user :User = req.user.user;
-        console.log(user)
-        return  of({
-            filename: file.filename,
-        })
-    }
+        return this.userService.update(
+            user.id,
+            {
+                profileImage: file.filename,
+                id:  user.id,
+                username: user.username,
+                email:  user.email,
+            }
+        ).pipe(map((user: User) => ({profileImage: user.profileImage})),
+        catchError(err => of({ error: err.message }))
+        );
+
+}
 
 
 }
