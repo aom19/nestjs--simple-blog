@@ -9,7 +9,7 @@ import { RolesGuard } from 'src/auth/guards/roles-guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { FileInterceptor } from '@nestjs/platform-express';
-import path from 'path';
+const path = require('path');
 import { diskStorage } from 'multer';
 
 @Controller('user')
@@ -101,15 +101,7 @@ export class UserController {
                 cb(null, `${filename}-${Date.now()}${extension}`);
             }
         }),
-        fileFilter: (req, file, cb) => {
-            const filetypes: RegExp = /jpeg|jpg|png|gif/;
-            const mimetype: boolean = filetypes.test(file.mimetype);
-            const extname: boolean = filetypes.test(path.extname(file.originalname).toLowerCase());
-            if (mimetype && extname) {
-                return cb(null, true);
-            }
-            
-        },
+       
         limits: {
             fileSize: 1024 * 1024 * 5
         }
