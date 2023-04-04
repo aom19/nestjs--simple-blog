@@ -1,4 +1,5 @@
 #manually
+uploads/
 .env
 package-lock.json
 

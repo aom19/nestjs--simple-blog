@@ -12,6 +12,21 @@ import { FileInterceptor } from '@nestjs/platform-express';
 const path = require('path');
 import { diskStorage } from 'multer';
 
+
+
+export const storage = {
+    storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+            const filename = path.parse(file.originalname).name.replace(/\s/g, '');
+            const extension = path.parse(file.originalname).ext;
+            cb(null, `${filename}-${Date.now()}${extension}`);
+        },
+    }),
+};
+
+
+
 @Controller('user')
 export class UserController {
 
@@ -92,20 +107,7 @@ export class UserController {
     }
 
     @Post('upload')
-    @UseInterceptors(FileInterceptor('file',{
-        storage: diskStorage({
-            destination: './uploads/profile_images',
-            filename: (req, file, cb) => {
-                const filename: string= path.parse(file.originalname).name.replace(/\s/g, '');
-                const extension: string = path.parse(file.originalname).ext;
-                cb(null, `${filename}-${Date.now()}${extension}`);
-            }
-        }),
-       
-        limits: {
-            fileSize: 1024 * 1024 * 5
-        }
-    }))
+    @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@Body() file: any):Observable<object> {
         return of({message: 'File uploaded successfully'});
 
