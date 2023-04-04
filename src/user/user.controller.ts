@@ -1,4 +1,4 @@
-import { Controller,Post,Delete,Get,Put, Param,Body, UseGuards, Query } from '@nestjs/common';
+import { Controller,Post,Delete,Get,Put, Param,Body, UseGuards, Query, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 
 import { User } from './interface/user.interface';
@@ -8,7 +8,9 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/roles-guard';
 import { PermissionGuard } from 'src/auth/guards/permission.guard';
 import { Pagination } from 'nestjs-typeorm-paginate';
-
+import { FileInterceptor } from '@nestjs/platform-express';
+import path from 'path';
+import { diskStorage } from 'multer';
 
 @Controller('user')
 export class UserController {
@@ -89,4 +91,36 @@ export class UserController {
 
     }
 
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file',{
+        storage: diskStorage({
+            destination: './uploads/profile_images',
+            filename: (req, file, cb) => {
+                const filename: string= path.parse(file.originalname).name.replace(/\s/g, '');
+                const extension: string = path.parse(file.originalname).ext;
+                cb(null, `${filename}-${Date.now()}${extension}`);
+            }
+        }),
+        fileFilter: (req, file, cb) => {
+            const filetypes: RegExp = /jpeg|jpg|png|gif/;
+            const mimetype: boolean = filetypes.test(file.mimetype);
+            const extname: boolean = filetypes.test(path.extname(file.originalname).toLowerCase());
+            if (mimetype && extname) {
+                return cb(null, true);
+            }
+            
+        },
+        limits: {
+            fileSize: 1024 * 1024 * 5
+        }
+    }))
+    uploadFile(@Body() file: any):Observable<object> {
+        return of({message: 'File uploaded successfully'});
+
+        
+    }
+
+
 }
+
+
