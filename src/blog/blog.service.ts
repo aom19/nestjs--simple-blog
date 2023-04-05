@@ -25,7 +25,9 @@ export class BlogService {
   }
 
   getBlogByAuthorId(authorId: number): Observable<BlogEntryEntity[]> {
-    return from(this.blogRepository.find());
+    return from(
+      this.blogRepository.find({ where: { author: { id: authorId } } }),
+    );
   }
 
   createBlog(blogEntry: BlogEntry, user: User): Observable<BlogEntry> {
