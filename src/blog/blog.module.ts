@@ -4,6 +4,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UserModule } from 'src/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlogEntryEntity } from './models/blog-entry.entity';
+import { BlogService } from './blog.service';
 
 @Module({
   imports: [
@@ -12,5 +13,6 @@ import { BlogEntryEntity } from './models/blog-entry.entity';
     UserModule,
   ],
   controllers: [BlogController],
+  providers: [BlogService],
 })
 export class BlogModule {}
