@@ -1,9 +1,10 @@
-import { Body, Controller, Request } from '@nestjs/common';
+import { Body, Controller, Request, UseGuards } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { Get, Post, Patch, Delete, Param } from '@nestjs/common';
 
 import { BlogEntry } from './models/blog-entry.interface';
 import { Observable } from 'rxjs';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 
 @Controller('blog')
 export class BlogController {
@@ -26,10 +27,13 @@ export class BlogController {
     return this.blogService.getBlogByAuthorId(authorId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   createBlog(@Body() blog: BlogEntry, @Request() req): Observable<BlogEntry> {
+    console.log(req.user);
     const { user } = req.user;
-    return this.blogService.createBlog(user, blog);
+
+    return this.blogService.createBlog(blog, user);
   }
 
   @Patch(':id')

@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BlogEntryEntity } from './models/blog-entry.entity';
-import { Observable, map, from } from 'rxjs';
+import { Observable, map, from, of, switchMap } from 'rxjs';
 import { BlogEntry } from './models/blog-entry.interface';
 import { UserService } from 'src/user/user.service';
+import { User } from 'src/user/interface/user.interface';
+import slugify from 'slugify';
 
 @Injectable()
 export class BlogService {
@@ -26,8 +28,14 @@ export class BlogService {
     return from(this.blogRepository.find());
   }
 
-  createBlog(blogEntry: BlogEntryEntity, user: User): Observable<BlogEntry> {
-    return from(this.blogRepository.save(blogEntry));
+  createBlog(blogEntry: BlogEntry, user: User): Observable<BlogEntry> {
+    blogEntry.author = user;
+    return this.generateSlug(blogEntry.title).pipe(
+      switchMap((slug: string) => {
+        blogEntry.slug = slug;
+        return from(this.blogRepository.save(blogEntry));
+      }),
+    );
   }
 
   updateBlog(id: number, blogEntry: BlogEntryEntity): Observable<any> {
@@ -36,5 +44,9 @@ export class BlogService {
 
   deleteBlog(id: number): Observable<any> {
     return from(this.blogRepository.delete(id));
+  }
+
+  generateSlug(title: string): Observable<string> {
+    return of(slugify(title, { lower: true }));
   }
 }
