@@ -26,6 +26,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 import { diskStorage } from 'multer';
 import { join } from 'path';
+import { UserIsUser } from 'src/auth/guards/UserIsUser';
 
 const path = require('path');
 
@@ -98,6 +99,7 @@ export class UserController {
     return this.userService.delete(id);
   }
 
+  @UseGuards(JwtAuthGuard, UserIsUser)
   @Put(':id')
   update(@Param('id') id: number, @Body() user: User) {
     return this.userService.update(id, user);
@@ -133,6 +135,7 @@ export class UserController {
       );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('profile-image/:imageName')
   findProfileImage(
     @Param('imageName') imageName,
