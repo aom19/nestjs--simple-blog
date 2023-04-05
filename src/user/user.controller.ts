@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Request,
+  Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 
@@ -24,12 +25,13 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { diskStorage } from 'multer';
+import { join } from 'path';
 
 const path = require('path');
 
 export const storage = {
   storage: diskStorage({
-    destination: './uploads',
+    destination: './uploads/profile_images',
     filename: (req, file, cb) => {
       const filename = path.parse(file.originalname).name.replace(/\s/g, '');
       const extension = path.parse(file.originalname).ext;
@@ -129,5 +131,15 @@ export class UserController {
         map((user: User) => ({ profileImage: user.profileImage })),
         catchError((err) => of({ error: err.message })),
       );
+  }
+
+  @Get('profile-image/:imageName')
+  findProfileImage(
+    @Param('imageName') imageName,
+    @Res() res,
+  ): Observable<Object> {
+    return of(
+      res.sendFile(join(process.cwd(), 'uploads/profile_images/' + imageName)),
+    );
   }
 }
